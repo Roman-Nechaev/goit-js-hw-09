@@ -28,6 +28,7 @@ const interval = {
     this.timerId = setInterval(() => {
       this.isActive = true;
       const color = getRandomHexColor();
+      console.log(color);
       refs.bodyEl.style.backgroundColor = color;
     }, DELAY);
   },

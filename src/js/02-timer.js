@@ -1,9 +1,16 @@
-// Описан в документации
 import flatpickr from 'flatpickr';
-// Дополнительный импорт стилей
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import 'flatpickr/dist/flatpickr.min.css';
-
 const flatpickrInpet = document.querySelector('input#datetime-picker');
+
+const refs = {
+  bntStart: document.querySelector('button[data-start]'),
+  $days: document.querySelector('.value[data-days]'),
+  $hours: document.querySelector('.value[data-hours]'),
+  $minutes: document.querySelector('.value[data-minutes]'),
+  $seconds: document.querySelector('.value[data-seconds]'),
+};
+
 const fp = flatpickr(flatpickrInpet, {
   enableTime: true,
   dateFormat: 'Y-m-d H:i',
@@ -15,51 +22,21 @@ const fp = flatpickr(flatpickrInpet, {
   },
 });
 
-const bntStart = document.querySelector('button[data-start]');
-
-// получаем элементы, содержащие компоненты даты
-const timerRefs = {
-  $days: document.querySelector('.value[data-days]'),
-  $hours: document.querySelector('.value[data-hours]'),
-  $minutes: document.querySelector('.value[data-minutes]'),
-  $seconds: document.querySelector('.value[data-seconds]'),
-};
-
-// console.log(timerRefs.$days);
-// console.log(timerRefs.$hours);
-// console.log(timerRefs.$minutes);
-// console.log(timerRefs.$seconds);
 // ===========================================================
-bntStart.addEventListener('click', onBtnStart);
-bntStart.setAttribute('disabled', true);
-// bntStart.removeAttribute('disabled');
-
-function onBtnStart() {
-  timer.start();
-  // timer.stop();
-}
+refs.bntStart.addEventListener('click', onBtnStart);
+refs.bntStart.setAttribute('disabled', true);
+flatpickrInpet.addEventListener('change', onStartTimer);
 
 class Timer {
   constructor({ onTick }) {
     this.timerId = null;
     this.isActive = false;
     this.onTick = onTick;
-
-    // this.init();
   }
 
   start() {
     if (this.isActive) {
       return;
-    }
-    if (new Date(fp.selectedDates).getTime() > new Date().getTime()) {
-      bntStart.removeAttribute('disabled');
-      console.log('ononon');
-    }
-    if (new Date(fp.selectedDates).getTime() <= new Date().getTime()) {
-      window.alert('Please choose a date in the future');
-      bntStart.setAttribute('disabled', true);
-      console.log('gfdisognodfi');
     }
 
     const countDownDate = new Date(fp.selectedDates).getTime();
@@ -70,15 +47,13 @@ class Timer {
       const deltaTime = countDownDate - currentTime;
       const onTime = this.convertMs(deltaTime);
       this.onTick(onTime);
-      // timeText(onTime);
-      console.log(onTime);
+      // console.log(onTime);
 
       if (deltaTime <= 0) {
         clearInterval(this.timerId);
         this.isActive = false;
         const onTime = this.convertMs(0);
         this.onTick(onTime);
-        console.log('Финиш');
       }
     }, 1000);
   }
@@ -104,34 +79,30 @@ class Timer {
   addLeadingZero(value) {
     return String(value).padStart(2, '0');
   }
-
-  // console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-  // console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-  // console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
 }
 
 const timer = new Timer({
   onTick: timeText,
 });
 
-function timeText({ days, hours, minutes, seconds }) {
-  timerRefs.$days.textContent = `${days}`;
-  timerRefs.$hours.textContent = `${hours}`;
-  timerRefs.$minutes.textContent = `${minutes}`;
-  timerRefs.$seconds.textContent = `${seconds}`;
-  console.log(timerRefs.$seconds);
-  // console.log(timerRefs.$minutes);
+function onBtnStart() {
+  timer.start();
 }
-flatpickrInpet.addEventListener('change', testWindos);
 
-function testWindos(params) {
+function onStartTimer() {
   if (new Date(fp.selectedDates).getTime() <= new Date().getTime()) {
-    window.alert('Please choose a date in the future');
-    bntStart.setAttribute('disabled', true);
-    console.log('gfdisognodfi');
+    // window.alert('Please choose a date in the future');
+    Notify.failure('Please choose a date in the future');
+    refs.bntStart.setAttribute('disabled', true);
   }
   if (new Date(fp.selectedDates).getTime() > new Date().getTime()) {
-    bntStart.removeAttribute('disabled');
-    console.log('ononon');
+    refs.bntStart.removeAttribute('disabled');
   }
+}
+
+function timeText({ days, hours, minutes, seconds }) {
+  refs.$days.textContent = `${days}`;
+  refs.$hours.textContent = `${hours}`;
+  refs.$minutes.textContent = `${minutes}`;
+  refs.$seconds.textContent = `${seconds}`;
 }
