@@ -16,8 +16,6 @@ refs.bntStop.addEventListener('click', () => {
   interval.stop();
 });
 
-//   ==========================================
-
 const interval = {
   timerId: null,
   isActive: false,
@@ -28,7 +26,6 @@ const interval = {
     this.timerId = setInterval(() => {
       this.isActive = true;
       const color = getRandomHexColor();
-      console.log(color);
       refs.bodyEl.style.backgroundColor = color;
     }, DELAY);
   },

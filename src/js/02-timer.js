@@ -22,7 +22,6 @@ const fp = flatpickr(flatpickrInpet, {
   },
 });
 
-// ===========================================================
 refs.bntStart.addEventListener('click', onBtnStart);
 refs.bntStart.setAttribute('disabled', true);
 flatpickrInpet.addEventListener('change', onStartTimer);
